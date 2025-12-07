@@ -6,11 +6,13 @@ The design uses a Liquid Glass / macOS-inspired UI with light and dark modes, op
 This project was built as part of the ALX Frontend Web Development Capstone Project.
 
 🚀 Features
+
 🔄 Real-time Currency Conversion
 
 Convert any amount between supported currencies
 
 Instant calculation as the user interacts
+
 
 🌍 Live Exchange Rates
 
@@ -18,11 +20,13 @@ Fetches rates from ExchangeRate-API (or another public currency API)
 
 Displays rate information and last update
 
+
 💡 Light & Dark Mode
 
 Fully designed UI for both modes
 
 Smooth toggle transition
+
 
 📱 Responsive Design
 
@@ -34,6 +38,7 @@ Tablet
 
 Mobile (checked with iPhone 16 Pro constraints)
 
+
 🧩 Simple, Intuitive UI
 
 Liquid glass aesthetics
@@ -42,6 +47,7 @@ Inter font for clean readability
 
 Infinity-arrow themed FluxRate logo
 
+
 ⚠️ Error Handling
 
 API failures
@@ -49,6 +55,7 @@ API failures
 No internet
 
 Invalid input
+
 
 🛠️ Tech Stack
 
@@ -62,6 +69,7 @@ ExchangeRate API
 
 Figma (UI design)
 
+
 🌐 Deployment
 
 The project will be deployed on:
@@ -69,6 +77,7 @@ The project will be deployed on:
 Netlify or Vercel
 
 A public deployment link will be added here after launch.
+
 
 🧑‍💻 Author
 
