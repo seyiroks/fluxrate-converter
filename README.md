@@ -69,3 +69,13 @@ The project will be deployed on:
 Netlify or Vercel
 
 A public deployment link will be added here after launch.
+
+🧑‍💻 Author
+
+Andy Seyi Elorm Iroko
+
+Music Producer • Videographer • Photographer
+
+Frontend Developer (ALX)
+
+🇬🇭 Accra, Ghana
