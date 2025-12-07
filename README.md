@@ -1,61 +1,32 @@
-A modern currency converter web application built with React & Tailwind CSS.
+🌐 FluxRate Converter
 
-FluxRate Converter is a sleek, responsive, single-page web app that allows users to convert currencies in real-time using live exchange rates from a public API.
-The design uses a Liquid Glass / macOS-inspired UI with light and dark modes, optimized for desktop and mobile screens.
-
-This project was built as part of the ALX Frontend Web Development Capstone Project.
+A modern, responsive currency converter web application built with React + Tailwind CSS, designed using your custom FluxRate branding and UI (Liquid Glass + Minimal Neon style).
+This project fetches real-time currency exchange data from a public API and allows users to quickly convert between currencies.
 
 🚀 Features
+✔ Real-Time Currency Conversion
 
-🔄 Real-time Currency Conversion
+Fetches live rates from a public currency API (e.g., ExchangeRate-API).
 
-Convert any amount between supported currencies
+Converts any amount from one currency to another instantly.
 
-Instant calculation as the user interacts
+✔ Clean, Responsive & Modern UI
 
+Designed with Inter font, dark & light mode variants, and your FluxRate custom logo.
 
-🌍 Live Exchange Rates
+Scales beautifully across Desktop, Tablet, and Mobile screens.
 
-Fetches rates from ExchangeRate-API (or another public currency API)
+✔ Error Handling
 
-Displays rate information and last update
+Handles offline mode gracefully.
 
+Displays friendly UI messages for network/API issues.
 
-💡 Light & Dark Mode
+✔ Accessible & User-Friendly
 
-Fully designed UI for both modes
+Minimal number of steps to perform conversions.
 
-Smooth toggle transition
-
-
-📱 Responsive Design
-
-Custom layouts for:
-
-Desktop (16:9)
-
-Tablet
-
-Mobile (checked with iPhone 16 Pro constraints)
-
-
-🧩 Simple, Intuitive UI
-
-Liquid glass aesthetics
-
-Inter font for clean readability
-
-Infinity-arrow themed FluxRate logo
-
-
-⚠️ Error Handling
-
-API failures
-
-No internet
-
-Invalid input
-
+Uses semantic HTML and accessible React components.
 
 🛠️ Tech Stack
 
@@ -65,26 +36,15 @@ Tailwind CSS
 
 JavaScript
 
-ExchangeRate API
+🌍 API Used
 
-Figma (UI design)
+ExchangeRate-API
 
+Free public rates
 
-🌐 Deployment
+Simple JSON responses
 
-The project will be deployed on:
+Fast, lightweight
 
-Netlify or Vercel
-
-A public deployment link will be added here after launch.
-
-
-🧑‍💻 Author
-
-Andy Seyi Elorm Iroko
-
-Music Producer • Videographer • Photographer
-
-Frontend Developer (ALX)
-
-🇬🇭 Accra, Ghana
+Documentation:
+https://www.exchangerate-api.com/docs/free
