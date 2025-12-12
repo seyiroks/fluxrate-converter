@@ -2,10 +2,21 @@
 module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./src/**/*.{js,jsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        cardGlass: "rgba(255,255,255,0.08)",
+        cardGlassLight: "rgba(255,255,255,0.35)",
+      },
+      backdropBlur: {
+        xs: "2px",
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+  ],
 };
