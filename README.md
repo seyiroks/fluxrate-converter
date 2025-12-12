@@ -1,16 +1,35 @@
-# React + Vite
+<h1>🚀 FluxRate Converter<h1/>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+  <h3>A modern currency converter web application built with React, Vite, and TailwindCSS, featuring a glass-morphism UI, dark/light mode, and real-time exchange rate API integration.<h3/>
 
-Currently, two official plugins are available:
+<h2>📌 Features<h2/>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+    🔄 Convert currencies in real time
+      
+    🌍 Pulls live exchange rates from a public API
+          
+    💹 Shows current exchange rate per currency pair
+          
+    🌓 Dark & light mode support
+          
+    📱 Fully responsive (desktop, tablet, mobile)
+          
+    🎨 Modern liquid-glass UI inspired by macOS
+          
+    ⚠️ Built-in error handling
+          
+    🚀 Deployed to Netlify/Vercel
 
-## React Compiler
+<h2>🛠️ Tech Stack<h2/>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+      React (Vite)
+      
+      TailwindCSS
+      
+      JavaScript
+      
+      ExchangeRate API
+      
+      Git + GitHub
+      
+      Netlify/Vercel
