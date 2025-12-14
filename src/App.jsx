@@ -1,8 +1,12 @@
 import { useState } from "react";
+import Header from "./components/Header";
 import ConverterCard from "./components/ConverterCard";
+import Footer from "./components/Footer";
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
+  const toggleTheme = () => setDarkMode(!darkMode);
+
 
   return (
     <div
@@ -13,21 +17,20 @@ export default function App() {
           : "url('/light-bg.png')",
       }}
     >
-      {/* Theme Toggle */}
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className="absolute top-4 right-4 px-3 py-2
-                   bg-white/20 text-white rounded-lg
-                   backdrop-blur-md shadow-lg
-                   hover:bg-white/30 transition"
-      >
-        {darkMode ? "Light Mode" : "Dark Mode"}
-      </button>
+      {/* HEADER */}
+      <Header darkMode={darkMode} toggleTheme={toggleTheme} />
 
-      {/* Main UI */}
-      <div className="min-h-screen flex items-center justify-center">
+      {/* MAIN CONTENT */}
+      <main className="pt-28 px-4 flex flex-col items-center">
+        <h1 className="text-white text-4xl font-regular mb-6">
+          Currency Converter
+        </h1>
+
         <ConverterCard />
-      </div>
+      </main>
+
+      {/* FOOTER */}
+      <Footer darkMode={darkMode} />
     </div>
   );
 }

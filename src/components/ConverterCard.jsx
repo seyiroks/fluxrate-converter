@@ -1,101 +1,57 @@
 export default function ConverterCard() {
   return (
-    <div
-      className="w-full max-w-lg
-                 bg-white/10 backdrop-blur-2xl
-                 border border-white/20
-                 rounded-3xl
-                 shadow-[0_30px_90px_rgba(0,0,0,0.4)]
-                 px-7 py-8"
-    >
-      {/* Header */}
-      <h2 className="text-center text-white text-lg font-medium tracking-wide mb-8">
-        Currency Converter
-      </h2>
+    <div className="w-full max-w-md rounded-3xl bg-white/10 backdrop-blur-x2 p-8 shadow-xl px-10">
 
       {/* FROM */}
-      <div className="space-y-3">
-        <p className="text-white/70 text-sm">From</p>
+      <div className="mb-10">
+        <p className="text-sm text-white/70 mb-2">From</p>
 
-        <div
-          className="flex items-center
-                    min-h-[64px]
-                    bg-white/15
-                    border border-white/20
-                    rounded-2xl
-                    px-5"
-
-        >
-          {/* Currency selector */}
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-7 h-7 rounded-full bg-white/40" />
-            <span className="text-white text-sm">USD</span>
-            <span className="text-white/60 text-sm">▼</span>
+        <div className="flex items-center justify-between h-14 rounded-xl bg-white/15 px-4">
+          {/* Left */}
+          <div className="flex items-center gap-2 text-white">
+            <div className="w-6 h-6 rounded-full bg-white/30" />
+            <span className="font-regular font-small">USD</span>
+            <span className="text-white/60">▼</span>
           </div>
 
-          {/* Amount input */}
-          <div className="flex items-center gap-1 text-white">
-            <span className="text-white/60">$</span>
-            <input
-              type="text"
-              placeholder="1,000"
-              className="bg-transparent
-                        w-28 text-right
-                        text-white text-base
-                        placeholder-white/40
-                        leading-none
-                        focus:outline-none"
-
-            />
-          </div>
+          {/* Right */}
+          <input
+            type="text"
+            placeholder="$0.00"
+            className="bg-transparent text-right text-white outline-none w-24"
+          />
         </div>
       </div>
 
       {/* SWAP */}
-      <div className="flex justify-center mt-10 my-2">
-        <button
-          className="w-12 h-12
-                     rounded-xl
-                     bg-white/20
-                     border border-white/30
-                     backdrop-blur-md
-                     text-white text-lg
-                     hover:bg-white/30 transition"
-        >
+      <div className="flex justify-center my-3">
+        <button className="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center hover:bg-white/30 transition">
           ⇅
         </button>
       </div>
 
       {/* TO */}
-      <div className="space-y-3">
-        <p className="text-white/70 text-sm">To</p>
+      <div className="mb-10">
+        <p className="text-sm text-white/70 mb-2">To</p>
 
-        <div
-          className="flex items-center
-                    min-h-[64px]
-                    bg-white/15
-                    border border-white/20
-                    rounded-2xl
-                    px-5"
-
-        >
-          {/* Currency selector */}
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-7 h-7 rounded-full bg-white/40" />
-            <span className="text-white text-sm">GHS</span>
-            <span className="text-white/60 text-sm">▼</span>
+        <div className="flex items-center justify-between h-14 rounded-xl bg-white/15 px-4">
+          {/* Left */}
+          <div className="flex items-center gap-2 text-white">
+            <div className="w-6 h-6 rounded-full bg-white/30" />
+            <span className="font-regular">EUR</span>
+            <span className="text-white/60">▼</span>
           </div>
 
-          {/* Output */}
-          <div className="text-white text-right w-28 text-base leading-none">
-            12,340
+          {/* Right */}
+          <div className="text-white/80 text-right w-24">
+            €0.00
           </div>
         </div>
       </div>
 
       {/* RATE */}
-      <p className="text-center text-white/50 text-sm mt-8">
-        1 USD = 12.34 GHS
+      <p className="text-xs text-center text-white/60 mt-2">
+        1 USD = 0.92 EUR
       </p>
     </div>
   );
