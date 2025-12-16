@@ -21,12 +21,17 @@ export default function App() {
       <Header darkMode={darkMode} toggleTheme={toggleTheme} />
 
       {/* MAIN CONTENT */}
-      <main className="pt-28 px-4 flex flex-col items-center">
-        <h1 className="text-white text-4xl font-regular mb-6">
+      <main className="pt-60 px-4 flex flex-col items-center">
+        <h1
+          className={`text-4xl font-regular mb-10 ${
+            darkMode ? "text-white" : "text-black"
+          }`}
+        >
           Currency Converter
         </h1>
 
-        <ConverterCard />
+
+        <ConverterCard darkMode={darkMode} />
       </main>
 
       {/* FOOTER */}

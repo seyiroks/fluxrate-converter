@@ -1,4 +1,4 @@
-import { Sun, Share2 } from "lucide-react";
+import { Sun, Moon, Share2 } from "lucide-react";
 
 export default function Header({ darkMode, toggleTheme }) {
   return (
@@ -17,15 +17,23 @@ export default function Header({ darkMode, toggleTheme }) {
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          className="text-white/90 hover:text-white transition"
+          className={`transition ${
+            darkMode
+              ? "text-white/90 hover:text-white"
+              : "text-black/80 hover:text-black"
+          }`}
           aria-label="Toggle theme"
         >
-          <Sun size={22} />
+          {darkMode ? <Sun size={22} /> : <Moon size={22} />}
         </button>
 
         {/* Share */}
         <button
-          className="text-white/90 hover:text-white transition"
+          className={`transition ${
+            darkMode
+              ? "text-white/90 hover:text-white"
+              : "text-black/80 hover:text-black"
+          }`}
           aria-label="Share"
         >
           <Share2 size={22} />

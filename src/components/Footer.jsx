@@ -5,14 +5,14 @@ export default function Footer({ darkMode }) {
       {/* Divider line */}
       <div
         className={`w-full h-px mb-5 ${
-          darkMode ? "bg-white/30" : "bg-black/20"
+          darkMode ? "bg-white/100" : "bg-black/100"
         }`}
       />
 
       {/* Footer text */}
       <p
         className={`text-sm text-right ${
-          darkMode ? "text-white/70" : "text-black/60"
+          darkMode ? "text-white/100" : "text-black/100"
         }`}
       >
         Copyright © {new Date().getFullYear()} FluxRate. All rights reserved.
