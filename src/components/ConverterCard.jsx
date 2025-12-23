@@ -166,18 +166,35 @@ const currencies = [
 ];
 
 export default function ConverterCard({ darkMode }) {
-  // Set USD and EUR as default currencies
-  const [fromCurrency, setFromCurrency] = useState(
-    currencies.find(c => c.code === "USD")
-  );
-  const [toCurrency, setToCurrency] = useState(
-    currencies.find(c => c.code === "EUR")
-  );
+  // Helper function to get initial state from URL or defaults
+  const getInitialState = () => {
+    const params = new URLSearchParams(window.location.search);
+    const fromCode = params.get('from');
+    const toCode = params.get('to');
+    const amountParam = params.get('amount');
+
+    const fromCurrency = fromCode 
+      ? currencies.find(c => c.code === fromCode.toUpperCase()) || currencies.find(c => c.code === "USD")
+      : currencies.find(c => c.code === "USD");
+    
+    const toCurrency = toCode
+      ? currencies.find(c => c.code === toCode.toUpperCase()) || currencies.find(c => c.code === "EUR")
+      : currencies.find(c => c.code === "EUR");
+
+    const amount = (amountParam && !isNaN(amountParam)) ? amountParam : "";
+
+    return { fromCurrency, toCurrency, amount };
+  };
+
+  const initialState = getInitialState();
+
+  const [fromCurrency, setFromCurrency] = useState(initialState.fromCurrency);
+  const [toCurrency, setToCurrency] = useState(initialState.toCurrency);
+  const [amount, setAmount] = useState(initialState.amount);
 
   const [fromOpen, setFromOpen] = useState(false);
   const [toOpen, setToOpen] = useState(false);
 
-  const [amount, setAmount] = useState("");
   const [rate, setRate] = useState(null);
   const [converted, setConverted] = useState("0.00");
   const [loading, setLoading] = useState(false);
@@ -185,6 +202,23 @@ export default function ConverterCard({ darkMode }) {
   // Refs for click outside detection
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
+
+  /* ===============================
+     UPDATE URL WHEN STATE CHANGES
+  =============================== */
+  useEffect(() => {
+    // Build URL with current state
+    const params = new URLSearchParams();
+    params.set('from', fromCurrency.code);
+    params.set('to', toCurrency.code);
+    if (amount) {
+      params.set('amount', amount);
+    }
+
+    // Update URL without reloading the page
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, '', newUrl);
+  }, [fromCurrency, toCurrency, amount]);
 
   /* ===============================
      CLICK OUTSIDE TO CLOSE DROPDOWNS
@@ -210,53 +244,35 @@ export default function ConverterCard({ darkMode }) {
      FETCH EXCHANGE RATE using ExchangeRate-API.com (Free version)
   =============================== */
   useEffect(() => {
-  async function fetchRate() {
-    if (!fromCurrency || !toCurrency) return;
+    async function fetchRate() {
+      setLoading(true);
+      try {
+        // Using the free exchangerate-api.com endpoint
+        const res = await fetch(
+          `https://open.er-api.com/v6/latest/${fromCurrency.code}`
+        );
+        const data = await res.json();
+        
+        if (data.result === "success") {
+          const fetchedRate = data.rates[toCurrency.code];
+          setRate(fetchedRate);
 
-    console.log(`Fetching rate: ${fromCurrency.code} -> ${toCurrency.code}`);
-    setLoading(true);
-
-    try {
-      const res = await fetch(
-        `https://open.er-api.com/v6/latest/${fromCurrency.code}`
-      );
-      const data = await res.json();
-
-      console.log("API Response:", data);
-
-      if (data.result !== "success") {
-        throw new Error("API failed");
+          // Recalculate conversion with new rate if amount exists
+          if (amount && fetchedRate) {
+            setConverted((amount * fetchedRate).toFixed(2));
+          } else if (!amount) {
+            setConverted("0.00");
+          }
+        }
+      } catch (error) {
+        console.error("Exchange rate error:", error);
+      } finally {
+        setLoading(false);
       }
-
-      const fetchedRate = data.rates[toCurrency.code];
-
-      if (!fetchedRate) {
-        console.warn(`Rate not available for ${toCurrency.code}`);
-        setRate(null);
-        setConverted("0.00");
-        return;
-      }
-
-      console.log("Fetched Rate:", fetchedRate);
-      setRate(fetchedRate);
-
-      if (amount) {
-        setConverted((amount * fetchedRate).toFixed(2));
-      } else {
-        setConverted("0.00");
-      }
-    } catch (error) {
-      console.error("Exchange rate error:", error);
-      setRate(null);
-      setConverted("0.00");
-    } finally {
-      setLoading(false);
     }
-  }
 
-  fetchRate();
-}, [fromCurrency.code, toCurrency.code]);
-
+    fetchRate();
+  }, [fromCurrency, toCurrency]);
 
   /* ===============================
      RECALCULATE when rate changes
@@ -297,7 +313,7 @@ export default function ConverterCard({ darkMode }) {
 
   return (
     <div
-      className={`w-full max-w-md rounded-3xl px-10 py-12 relative backdrop-blur-x2 shadow-xl border ${
+      className={`w-full max-w-md rounded-2xl sm:rounded-3xl px-6 sm:px-10 py-8 sm:py-12 relative backdrop-blur-x2 shadow-xl border ${
         darkMode
           ? "bg-white/10 border-white/25"
           : "bg-white/70 border-black/25"
@@ -305,37 +321,37 @@ export default function ConverterCard({ darkMode }) {
     >
       {/* Soft glow */}
       <div
-        className={`absolute inset-0 rounded-3xl blur-3xl -z-10 ${
+        className={`absolute inset-0 rounded-2xl sm:rounded-3xl blur-3xl -z-10 ${
           darkMode ? "bg-white/5" : "bg-white/40"
         }`}
       />
 
       {/* FROM */}
-      <div className="mb-14 relative" ref={fromDropdownRef}>
-        <p className={`text-sm mb-2 ml-2 ${darkMode ? "text-white" : "text-black"}`}>
+      <div className="mb-10 sm:mb-14 relative" ref={fromDropdownRef}>
+        <p className={`text-xs sm:text-sm mb-2 ml-2 ${darkMode ? "text-white" : "text-black"}`}>
           From
         </p>
 
         <div
-          className={`flex items-center justify-between h-16 rounded-xl px-4 ${
+          className={`flex items-center justify-between h-14 sm:h-16 rounded-xl px-3 sm:px-4 ${
             darkMode ? "bg-white/15" : "bg-black/10"
           }`}
         >
           <button
             onClick={() => setFromOpen(!fromOpen)}
-            className={`flex items-center gap-2 ${
+            className={`flex items-center gap-1.5 sm:gap-2 ${
               darkMode ? "text-white" : "text-black"
             }`}
           >
             <img 
               src={`https://flagcdn.com/w40/${fromCurrency.country}.png`}
               alt={`${fromCurrency.name} flag`}
-              className="w-8 h-6 object-cover rounded"
+              className="w-6 h-5 sm:w-8 sm:h-6 object-cover rounded"
               onError={(e) => {
                 e.target.style.display = 'none';
               }}
             />
-            <span className="font-medium">{fromCurrency.code}</span>
+            <span className="font-medium text-sm sm:text-base">{fromCurrency.code}</span>
             <span className="opacity-70 text-xs">▼</span>
           </button>
 
@@ -344,7 +360,7 @@ export default function ConverterCard({ darkMode }) {
             value={amount}
             onChange={handleAmountChange}
             placeholder="0.00"
-            className={`bg-transparent text-right outline-none w-32 text-lg font-medium ${
+            className={`bg-transparent text-right outline-none w-24 sm:w-32 text-base sm:text-lg font-medium ${
               darkMode ? "text-white placeholder-white/40" : "text-black placeholder-black/40"
             }`}
           />
@@ -352,7 +368,7 @@ export default function ConverterCard({ darkMode }) {
 
         {fromOpen && (
           <div
-            className={`absolute mt-2 w-full rounded-xl p-2 z-20 border max-h-60 overflow-y-auto ${
+            className={`absolute mt-2 w-full rounded-xl p-2 z-20 border max-h-48 sm:max-h-60 overflow-y-auto ${
               darkMode
                 ? "bg-black/30 backdrop-blur-xl border-white/25 text-white"
                 : "bg-white shadow-lg border-black/25 text-black"
@@ -369,19 +385,19 @@ export default function ConverterCard({ darkMode }) {
                   setFromCurrency(currency);
                   setFromOpen(false);
                 }}
-                className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition ${
+                className={`flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 cursor-pointer rounded-lg transition ${
                   darkMode ? "hover:bg-white/10" : "hover:bg-black/5"
                 } ${fromCurrency.code === currency.code ? (darkMode ? "bg-white/15" : "bg-black/10") : ""}`}
               >
                 <img 
                   src={`https://flagcdn.com/w40/${currency.country}.png`}
                   alt={`${currency.name} flag`}
-                  className="w-7 h-5 object-cover rounded"
+                  className="w-6 h-4 sm:w-7 sm:h-5 object-cover rounded flex-shrink-0"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
                 />
-                <span className="text-sm">
+                <span className="text-xs sm:text-sm truncate">
                   {currency.code} — {currency.name}
                 </span>
               </div>
@@ -391,10 +407,10 @@ export default function ConverterCard({ darkMode }) {
       </div>
 
       {/* SWAP */}
-      <div className="flex justify-center my-6">
+      <div className="flex justify-center my-4 sm:my-6">
         <button
           onClick={handleSwap}
-          className={`w-12 h-12 rounded-lg flex items-center justify-center transition text-xl ${
+          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center transition text-lg sm:text-xl ${
             darkMode
               ? "bg-white/20 text-white hover:bg-white/30"
               : "bg-black/10 text-black hover:bg-black/20"
@@ -405,36 +421,36 @@ export default function ConverterCard({ darkMode }) {
       </div>
 
       {/* TO */}
-      <div className="mb-14 relative" ref={toDropdownRef}>
-        <p className={`text-sm mb-2 ml-2 ${darkMode ? "text-white" : "text-black"}`}>
+      <div className="mb-10 sm:mb-14 relative" ref={toDropdownRef}>
+        <p className={`text-xs sm:text-sm mb-2 ml-2 ${darkMode ? "text-white" : "text-black"}`}>
           To
         </p>
 
         <div
-          className={`flex items-center justify-between h-16 rounded-xl px-4 ${
+          className={`flex items-center justify-between h-14 sm:h-16 rounded-xl px-3 sm:px-4 ${
             darkMode ? "bg-white/15" : "bg-black/10"
           }`}
         >
           <button
             onClick={() => setToOpen(!toOpen)}
-            className={`flex items-center gap-2 ${
+            className={`flex items-center gap-1.5 sm:gap-2 ${
               darkMode ? "text-white" : "text-black"
             }`}
           >
             <img 
               src={`https://flagcdn.com/w40/${toCurrency.country}.png`}
               alt={`${toCurrency.name} flag`}
-              className="w-8 h-6 object-cover rounded"
+              className="w-6 h-5 sm:w-8 sm:h-6 object-cover rounded"
               onError={(e) => {
                 e.target.style.display = 'none';
               }}
             />
-            <span className="font-medium">{toCurrency.code}</span>
+            <span className="font-medium text-sm sm:text-base">{toCurrency.code}</span>
             <span className="opacity-70 text-xs">▼</span>
           </button>
 
           <div
-            className={`text-right w-32 text-lg font-medium ${
+            className={`text-right w-24 sm:w-32 text-base sm:text-lg font-medium ${
               darkMode ? "text-white" : "text-black"
             }`}
           >
@@ -451,7 +467,7 @@ export default function ConverterCard({ darkMode }) {
 
         {toOpen && (
           <div
-            className={`absolute mt-2 w-full rounded-xl p-2 z-20 border max-h-60 overflow-y-auto ${
+            className={`absolute mt-2 w-full rounded-xl p-2 z-20 border max-h-48 sm:max-h-60 overflow-y-auto ${
               darkMode
                 ? "bg-black/30 backdrop-blur-xl border-white/25 text-white"
                 : "bg-white shadow-lg border-black/25 text-black"
@@ -468,19 +484,19 @@ export default function ConverterCard({ darkMode }) {
                   setToCurrency(currency);
                   setToOpen(false);
                 }}
-                className={`flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition ${
+                className={`flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 cursor-pointer rounded-lg transition ${
                   darkMode ? "hover:bg-white/10" : "hover:bg-black/5"
                 } ${toCurrency.code === currency.code ? (darkMode ? "bg-white/15" : "bg-black/10") : ""}`}
               >
                 <img 
                   src={`https://flagcdn.com/w40/${currency.country}.png`}
                   alt={`${currency.name} flag`}
-                  className="w-7 h-5 object-cover rounded"
+                  className="w-6 h-4 sm:w-7 sm:h-5 object-cover rounded flex-shrink-0"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
                 />
-                <span className="text-sm">
+                <span className="text-xs sm:text-sm truncate">
                   {currency.code} — {currency.name}
                 </span>
               </div>
@@ -491,7 +507,7 @@ export default function ConverterCard({ darkMode }) {
 
       {/* RATE */}
       <p
-        className={`text-xs text-center mt-6 ${
+        className={`text-xs text-center mt-4 sm:mt-6 ${
           darkMode ? "text-white/80" : "text-black/80"
         }`}
       >
