@@ -27,7 +27,7 @@ FluxRate Converter allows users to:
 - Select countries with **flag dropdowns**
 - Enjoy a mobile-first, responsive experience
 
-This app uses the **Frankfurter API** for accurate and up-to-date exchange rates.
+This app uses the **Frankfurter API or ExchangeRate API** for accurate and up-to-date exchange rates.
 
 ---
 
@@ -49,16 +49,20 @@ This app uses the **Frankfurter API** for accurate and up-to-date exchange rates
 |---------|--------------|
 | Frontend | React (Vite), JavaScript |
 | Styling | Tailwind CSS v3 |
-| API | Frankfurter API |
+| API | Frankfurter API or ExchangeRate API |
 | Version Control | Git & GitHub |
 
 ---
 
-## 🔌 **API Used: Frankfurter**
+## 🔌 **API Used: Frankfurter or ExchangeRate API**
 
 Free, fast, no API key required.
 
 https://api.frankfurter.app
+
+OR
+
+https://open.er-api.com/v6/latest/
 
 ---
 
@@ -80,14 +84,8 @@ https://api.frankfurter.app
 
 ## 🔮 **Future Enhancements**
 
-- 🌙 Dark mode
-
-- 📊 Rate history graphs
-
-- 💾 Conversion history (localStorage)
+- 🌙 Dark mode 
 
 - 🌐 Support for more currencies
-
-- 🔒 User accounts + saved preferences
 
 - 🚀 Deployment to Vercel/Netlify
