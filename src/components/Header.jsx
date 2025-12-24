@@ -1,64 +1,46 @@
 import { Sun, Moon, Share2, Check } from "lucide-react";
 import { useState } from "react";
 
+// Header with logo, theme button and share button
 export default function Header({ darkMode, toggleTheme }) {
   const [showCopied, setShowCopied] = useState(false);
 
+  // Function to copy the current page link to clipboard
   const handleShare = async () => {
-    // Get URL parameters to customize share message
-    const params = new URLSearchParams(window.location.search);
-    const fromCode = params.get('from');
-    const toCode = params.get('to');
-    const amount = params.get('amount');
-
-    // Create dynamic share text based on current conversion
-    let shareText = "Check out this awesome currency converter with 160+ currencies!";
-    if (fromCode && toCode && amount) {
-      shareText = `Convert ${amount} ${fromCode} to ${toCode} with FluxRate - Real-time currency converter!`;
-    } else if (fromCode && toCode) {
-      shareText = `Convert ${fromCode} to ${toCode} with FluxRate - Real-time currency converter!`;
-    }
-
-    const shareData = {
-      title: "FluxRate - Currency Converter",
-      text: shareText,
-      url: window.location.href,
-    };
-
     try {
-      // Try using the Web Share API (works on mobile and some desktop browsers)
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback: Copy link to clipboard
-        await navigator.clipboard.writeText(window.location.href);
-        
-        // Show "Copied!" feedback
-        setShowCopied(true);
-        setTimeout(() => setShowCopied(false), 2000);
-      }
+      // Copy the full current URL (includes from, to, and amount if present)
+      await navigator.clipboard.writeText(window.location.href);
+      
+      // Show "copied" feedback
+      setShowCopied(true);
+      
+      // Hide the check mark and message after 2 seconds
+      setTimeout(() => setShowCopied(false), 2000);
     } catch (error) {
-      // User cancelled share or clipboard failed
-      if (error.name !== "AbortError") {
-        console.error("Share failed:", error);
-      }
+      console.error("Failed to copy link:", error);
     }
   };
-
+  
   return (
     <header className="absolute top-0 left-0 w-full px-4 sm:px-6 pt-4 sm:pt-5 flex items-center justify-between z-50">
       
-      {/* Logo */}
-      <img
-        src={darkMode ? "/dark-logo.png" : "/light-logo.png"}
-        alt="FluxRate logo"
-        className="h-8 sm:h-10 w-auto"
-      />
+      {/* Clickable logo that goes back to homepage */}
+      <a 
+        href="/" 
+        className="cursor-pointer transition-opacity hover:opacity-80"
+        aria-label="Go to homepage"
+      >
+        <img
+          src={darkMode ? "/dark-logo.png" : "/light-logo.png"}
+          alt="FluxRate logo"
+          className="h-8 sm:h-10 w-auto"
+        />
+      </a>
 
-      {/* Right icons */}
+      {/* Buttons on the right */}
       <div className="flex items-center gap-3 sm:gap-5">
         
-        {/* Theme toggle */}
+        {/* Theme toggle button */}
         <button
           onClick={toggleTheme}
           className={`transition p-1 ${
@@ -71,7 +53,7 @@ export default function Header({ darkMode, toggleTheme }) {
           {darkMode ? <Sun size={20} className="sm:w-[22px] sm:h-[22px]" /> : <Moon size={20} className="sm:w-[22px] sm:h-[22px]" />}
         </button>
 
-        {/* Share */}
+        {/* Share button - now only copies link */}
         <div className="relative">
           <button
             onClick={handleShare}
@@ -85,7 +67,7 @@ export default function Header({ darkMode, toggleTheme }) {
             {showCopied ? <Check size={20} className="sm:w-[22px] sm:h-[22px]" /> : <Share2 size={20} className="sm:w-[22px] sm:h-[22px]" />}
           </button>
           
-          {/* Copied tooltip */}
+          {/* "Link copied!" message */}
           {showCopied && (
             <div
               className={`absolute top-full right-0 mt-2 px-3 py-1 rounded-lg text-xs whitespace-nowrap ${

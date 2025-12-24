@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-// Comprehensive list of currencies (160+ supported by exchangerate-api.com)
-// Alphabetically sorted
+// Full list of all currencies supported by API in alphabetical order
 const currencies = [
   { code: "AED", name: "UAE Dirham", country: "ae", symbol: "د.إ" },
   { code: "AFN", name: "Afghan Afghani", country: "af", symbol: "؋" },
@@ -166,7 +165,7 @@ const currencies = [
 ];
 
 export default function ConverterCard({ darkMode }) {
-  // Helper function to get initial state from URL or defaults
+  // Get starting values from the URL
   const getInitialState = () => {
     const params = new URLSearchParams(window.location.search);
     const fromCode = params.get('from');
@@ -188,6 +187,7 @@ export default function ConverterCard({ darkMode }) {
 
   const initialState = getInitialState();
 
+  // All the state variables
   const [fromCurrency, setFromCurrency] = useState(initialState.fromCurrency);
   const [toCurrency, setToCurrency] = useState(initialState.toCurrency);
   const [amount, setAmount] = useState(initialState.amount);
@@ -198,14 +198,13 @@ export default function ConverterCard({ darkMode }) {
   const [rate, setRate] = useState(null);
   const [converted, setConverted] = useState("0.00");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Refs for click outside detection
+  // References to detect clicks outside dropdowns
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
 
-  /* ===============================
-     UPDATE URL WHEN STATE CHANGES
-  =============================== */
+  // Update the URL whenever currencies or amount change
   useEffect(() => {
     // Build URL with current state
     const params = new URLSearchParams();
@@ -215,14 +214,12 @@ export default function ConverterCard({ darkMode }) {
       params.set('amount', amount);
     }
 
-    // Update URL without reloading the page
+    // Update the URL without reloading the page
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, '', newUrl);
   }, [fromCurrency, toCurrency, amount]);
 
-  /* ===============================
-     CLICK OUTSIDE TO CLOSE DROPDOWNS
-  =============================== */
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (fromDropdownRef.current && !fromDropdownRef.current.contains(event.target)) {
@@ -240,32 +237,59 @@ export default function ConverterCard({ darkMode }) {
     };
   }, []);
 
-  /* ===============================
-     FETCH EXCHANGE RATE using ExchangeRate-API.com (Free version)
-  =============================== */
+  // Fetch the latest exchange rate when currencies change
   useEffect(() => {
     async function fetchRate() {
       setLoading(true);
+      setError(null); 
+      
       try {
-        // Using the free exchangerate-api.com endpoint
         const res = await fetch(
           `https://open.er-api.com/v6/latest/${fromCurrency.code}`
         );
+        
+        if (!res.ok) {
+          throw new Error(`API returned status ${res.status}`);
+        }
+        
         const data = await res.json();
         
         if (data.result === "success") {
           const fetchedRate = data.rates[toCurrency.code];
+          
+          if (!fetchedRate) {
+            setError(`Exchange rate not available for ${toCurrency.code}`);
+            setRate(null);
+            setConverted("0.00");
+            return;
+          }
+          
           setRate(fetchedRate);
 
-          // Recalculate conversion with new rate if amount exists
           if (amount && fetchedRate) {
-            setConverted((amount * fetchedRate).toFixed(2));
+            const numAmount = parseFloat(amount);
+            if (!isNaN(numAmount) && numAmount > 0) {
+              const result = numAmount * fetchedRate;
+              if (result > 999999999999) {
+                setError("Conversion result is too large");
+                setConverted("0.00");
+              } else {
+                setConverted(result.toFixed(2));
+              }
+            }
           } else if (!amount) {
             setConverted("0.00");
           }
+        } else {
+          setError("Failed to fetch exchange rates. Please try again.");
+          setRate(null);
+          setConverted("0.00");
         }
       } catch (error) {
         console.error("Exchange rate error:", error);
+        setError("Unable to fetch exchange rates. Check your connection.");
+        setRate(null);
+        setConverted("0.00");
       } finally {
         setLoading(false);
       }
@@ -274,37 +298,72 @@ export default function ConverterCard({ darkMode }) {
     fetchRate();
   }, [fromCurrency, toCurrency]);
 
-  /* ===============================
-     RECALCULATE when rate changes
-  =============================== */
+  // Recalculate the converted amount whenever the rate or amount changes
   useEffect(() => {
     if (rate && amount) {
       setConverted((amount * rate).toFixed(2));
     }
   }, [rate, amount]);
 
-  /* ===============================
-     HANDLE INPUT - Real-time conversion
-  =============================== */
+  // Typing in the amount input field
   const handleAmountChange = (e) => {
     const value = e.target.value;
+    
+    // Remove error when user starts typing
+    setError(null);
+    
+    if (value === "") {
+      setAmount("");
+      setConverted("0.00");
+      return;
+    }
+
+    const numValue = parseFloat(value);
+    
+    if (isNaN(numValue)) {
+      setError("Please enter a valid number");
+      setAmount(value);
+      setConverted("0.00");
+      return;
+    }
+
+    // No negative numbers
+    if (numValue < 0) {
+      setError("Amount cannot be negative");
+      setAmount(value);
+      setConverted("0.00");
+      return;
+    }
+
+    if (numValue > 999999999999) {
+      setError("Amount is too large");
+      setAmount(value);
+      setConverted("0.00");
+      return;
+    }
+
     setAmount(value);
 
-    if (rate && value) {
-      setConverted((value * rate).toFixed(2));
+    if (rate && numValue > 0) {
+      const result = numValue * rate;
+      
+      if (result > 999999999999) {
+        setError("Conversion result is too large");
+        setConverted("0.00");
+      } else {
+        setConverted(result.toFixed(2));
+      }
     } else {
       setConverted("0.00");
     }
   };
 
-  /* ===============================
-     SWAP
-  =============================== */
+  // Swap the from and to currencies
   const handleSwap = () => {
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
     
-    // Also swap the amounts for better UX
+    // Swap the from and to amounts
     if (converted && converted !== "0.00") {
       setAmount(converted);
       setConverted(amount || "0.00");
@@ -319,14 +378,14 @@ export default function ConverterCard({ darkMode }) {
           : "bg-white/70 border-black/25"
       }`}
     >
-      {/* Soft glow */}
+      {/* Soft glow behind the card */}
       <div
         className={`absolute inset-0 rounded-2xl sm:rounded-3xl blur-3xl -z-10 ${
           darkMode ? "bg-white/5" : "bg-white/40"
         }`}
       />
 
-      {/* FROM */}
+      {/* FROM section */}
       <div className="mb-10 sm:mb-14 relative" ref={fromDropdownRef}>
         <p className={`text-xs sm:text-sm mb-2 ml-2 ${darkMode ? "text-white" : "text-black"}`}>
           From
@@ -362,10 +421,18 @@ export default function ConverterCard({ darkMode }) {
             placeholder="0.00"
             className={`bg-transparent text-right outline-none w-24 sm:w-32 text-base sm:text-lg font-medium ${
               darkMode ? "text-white placeholder-white/40" : "text-black placeholder-black/40"
-            }`}
+            } ${error ? "text-red-400" : ""}`}
           />
         </div>
 
+        {/* Show error message if the amount is invalid */}
+        {error && (
+          <p className="text-xs text-red-400 mt-2 ml-2">
+            {error}
+          </p>
+        )}
+
+        {/* Dropdown for choosing From currency */}
         {fromOpen && (
           <div
             className={`absolute mt-2 w-full rounded-xl p-2 z-20 border max-h-48 sm:max-h-60 overflow-y-auto ${
@@ -406,7 +473,7 @@ export default function ConverterCard({ darkMode }) {
         )}
       </div>
 
-      {/* SWAP */}
+      {/* Swap button in the middle */}
       <div className="flex justify-center my-4 sm:my-6">
         <button
           onClick={handleSwap}
@@ -420,7 +487,7 @@ export default function ConverterCard({ darkMode }) {
         </button>
       </div>
 
-      {/* TO */}
+      {/* TO section */}
       <div className="mb-10 sm:mb-14 relative" ref={toDropdownRef}>
         <p className={`text-xs sm:text-sm mb-2 ml-2 ${darkMode ? "text-white" : "text-black"}`}>
           To
@@ -465,6 +532,7 @@ export default function ConverterCard({ darkMode }) {
           </div>
         </div>
 
+        {/* Dropdown for choosing To currency */}
         {toOpen && (
           <div
             className={`absolute mt-2 w-full rounded-xl p-2 z-20 border max-h-48 sm:max-h-60 overflow-y-auto ${
@@ -505,14 +573,16 @@ export default function ConverterCard({ darkMode }) {
         )}
       </div>
 
-      {/* RATE */}
+      {/* Show the current exchange rate at the bottom */}
       <p
         className={`text-xs text-center mt-4 sm:mt-6 ${
-          darkMode ? "text-white/80" : "text-black/80"
+          error ? "text-red-400" : darkMode ? "text-white/80" : "text-black/80"
         }`}
       >
         {loading ? (
           "Loading rate..."
+        ) : error && !rate ? (
+          error
         ) : rate ? (
           `1 ${fromCurrency.code} = ${rate.toFixed(4)} ${toCurrency.code}`
         ) : (

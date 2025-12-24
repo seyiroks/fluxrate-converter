@@ -16,10 +16,10 @@ export default function App() {
           : "url('/light-bg.png')",
       }}
     >
-      {/* HEADER */}
+      {/* Header at the top with logo and buttons */}
       <Header darkMode={darkMode} toggleTheme={toggleTheme} />
 
-      {/* MAIN CONTENT */}
+      {/* Main part of the page */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-20 sm:py-24 md:py-32">
         <h1
           className={`text-3xl sm:text-4xl lg:text-5xl font-regular mb-6 sm:mb-8 md:mb-10 text-center ${
@@ -32,7 +32,7 @@ export default function App() {
         <ConverterCard darkMode={darkMode} />
       </main>
 
-      {/* FOOTER */}
+      {/* Footer at the bottom */}
       <Footer darkMode={darkMode} />
     </div>
   );
